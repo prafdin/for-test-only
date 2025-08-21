@@ -1,0 +1,7 @@
+
+  # .github/workflows/check.yml
+  on: [push]
+  jobs:
+    check:
+      run: ansible-playbook --check
+
