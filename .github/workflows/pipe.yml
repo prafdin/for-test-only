@@ -1,0 +1,21 @@
+  on:
+    push:
+    workflow_dispatch:
+      inputs:
+        action:
+          type: choice
+          options: [check, deploy]
+
+  jobs:
+    ansible:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Check mode on push
+          run: ansible-playbook --check setup.yml
+          if: github.event_name == 'push'
+
+        - name: Deploy on manual trigger
+          run: ansible-playbook setup.yml
+          if: github.event.inputs.action == 'deploy'
