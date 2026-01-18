@@ -18,5 +18,10 @@ jobs:
         run: |
           SECRET_ID="e6q0t0b0r7550ctrpia3"
           SECRET_DATA=$(curl -sH "Authorization: Bearer ${{steps.get-iam-token.outputs.token}}" https://payload.lockbox.api.cloud.yandex.net/lockbox/v1/secrets/$SECRET_ID/payload)
-          echo "SECRET_DATA=${SECRET_DATA}" >> $GITHUB_OUTPUT
+          {
+            echo "SECRET_DATA<<EOF"
+            echo "$SECRET_DATA"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
         id: getlockboxpayload
