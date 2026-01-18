@@ -1,21 +1,22 @@
-  on:
-    push:
-    workflow_dispatch:
-      inputs:
-        action:
-          type: choice
-          options: [check, deploy]
+permissions:
+  id-token: write # Требуется для запроса JWT-токена
 
-  jobs:
-    ansible:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
+on:
+  workflow_dispatch:
 
-        - name: Check mode on push
-          run: ansible-playbook --check setup.yml
-          if: github.event_name == 'push'
+jobs:
+  ansible:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Yandex Cloud IAM token
+        id: get-iam-token
+        uses: docker://ghcr.io/yc-actions/yc-iam-token-fed:1.0.0
+        with:
+          yc-sa-id: ajeoorepccueu6hhe4vn
 
-        - name: Deploy on manual trigger
-          run: ansible-playbook setup.yml
-          if: github.event.inputs.action == 'deploy'
+      - name: GetLockboxPayload
+        run: |
+          SECRET_ID="e6q0t0b0r7550ctrpia3"
+          SECRET_DATA=$(curl -sH "Authorization: Bearer ${{steps.get-iam-token.outputs.token}}" https://payload.lockbox.api.cloud.yandex.net/lockbox/v1/secrets/$SECRET_ID/payload)
+          echo "SECRET_DATA=${SECRET_DATA}" >> $GITHUB_OUTPUT
+        id: getlockboxpayload
