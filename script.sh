@@ -1,5 +1,5 @@
 #!/bin/bash
 
-echo hi from git repo
+echo hi from git repo!
 
 sleep 5
